@@ -14,7 +14,7 @@ class Renderer:
         self.camera = np.array([0, 0, 1])
         self.lights = [
             { 'position': np.array([5, 5, 5]), 'ambient': np.array([0.8, 0.8, 0.8]), 'diffuse': np.array([1, 1, 1]), 'specular': np.array([1, 1, 1]) },
-            { 'position': np.array([-5, 2, 5]), 'ambient': np.array([0.8, 0.8, 0.8]), 'diffuse': np.array([1, 1, 1]), 'specular': np.array([1, 1, 1]) }
+            # { 'position': np.array([-5, 2, 5]), 'ambient': np.array([0.8, 0.8, 0.8]), 'diffuse': np.array([1, 1, 1]), 'specular': np.array([1, 1, 1]) }
         ]
 
     def render(self, objects):
@@ -40,9 +40,9 @@ class Renderer:
                         break
 
                     intersection = origin + min_distance * direction
-                    normal_to_surface = utils.normalize(intersection - nearest_object.center)
+                    # normal_to_surface = utils.normalize(intersection - nearest_object.center)
+                    normal_to_surface = nearest_object.normal_to_surface(intersection)
                     shifted_point = intersection + 1e-5 * normal_to_surface
-                    shifted_point = intersection
 
                     for light in self.lights:
 
@@ -68,9 +68,9 @@ class Renderer:
                         H = utils.normalize(intersection_to_light + intersection_to_camera)
                         illumination += nearest_object.material.specular * light['specular'] * np.dot(normal_to_surface, H) ** (nearest_object.material.shininess / 4)
 
-                    # reflection
-                    color += reflection * illumination
-                    reflection *= nearest_object.material.reflection
+                        # reflection
+                        color += reflection * illumination
+                        reflection *= nearest_object.material.reflection
 
                     origin = shifted_point
                     direction = utils.reflected(direction, normal_to_surface)
